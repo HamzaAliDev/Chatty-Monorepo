@@ -24,7 +24,10 @@ interface SetAuthUserId {
 //     (): Promise<void>;
 // }
 
-const BASEURL = process.env.NEXT_PUBLIC_SOCKET_IO_BASE_URL || '';
+const BASEURL =
+    process.env.NODE_ENV === "development"
+        ? process.env.NEXT_PUBLIC_API_BASE_URL
+        : '/';
 export const useAuthStore = create<AuthStore>((set, get) => ({
     authUser: null,
     authUserId: null,
@@ -58,7 +61,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
             query: {
                 userId: authUserId,
             },
-            transports: ['websocket'], 
+            transports: ['websocket'],
         })
         socket.connect();
 

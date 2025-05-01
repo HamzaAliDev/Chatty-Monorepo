@@ -19,7 +19,7 @@ interface ChatStore {
     unsubscribeFromMessages: () => void;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+const API_URL = process.env.NODE_ENV === "development" ? process.env.NEXT_PUBLIC_API_BASE_URL || '' : '/';
 export const useChatStore = create<ChatStore>((set, get) => ({
     messages: [],
     users: [],
@@ -74,7 +74,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     // send message
     sendMessage: async (messageData, authUserId) => {
         const { selectedUser, messages } = get();
-      
+
         try {
             const response = await axios.post(`${API_URL}messages/send`, messageData, {
                 params: { selectedUserId: selectedUser?.clerkId, authUserId: authUserId }
@@ -94,14 +94,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     },
 
     subscribeToMessages: () => {
-        const {selectedUser} = get();
-        if(!selectedUser) return;
+        const { selectedUser } = get();
+        if (!selectedUser) return;
 
         const socket = useAuthStore.getState().socket;
 
-        socket?.on("newMessage",(newMessage)=>{
-            if(newMessage.senderId !== selectedUser.clerkId) return;
-            set({messages: [...get().messages, newMessage]})
+        socket?.on("newMessage", (newMessage) => {
+            if (newMessage.senderId !== selectedUser.clerkId) return;
+            set({ messages: [...get().messages, newMessage] })
         })
     },
 
